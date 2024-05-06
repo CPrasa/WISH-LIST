@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import img1 from'./images/Frame 25.png';
+import axios from "axios";
 
 export default function Loging() {
   const [loginData, setLoginData] = useState({
     email: "",
-    password: "",
-    loginAs: "user"
+    password: ""
   });
 
   const handleInputChange = (event) => {
@@ -17,29 +15,36 @@ export default function Loging() {
     });
   };
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
 
-    if (
-      (loginData.email === "example@gmail.com" && loginData.password === "12345" && loginData.loginAs === "user") ||
-      (loginData.email === "admin@gmail.com" && loginData.password === "admin" && loginData.loginAs === "admin")
-    ) {
-      if (loginData.loginAs === "user") {
-        window.location.href = "/user";
-      } else if (loginData.loginAs === "admin") {
-        window.location.href = "/add";
-      }
-    } else {
-      alert("Invalid credentials. Please try again.");
-    }
-  };
+    try {
+      // Fetch user data from the API
+      const response = await axios.get("http://localhost:3000/users");
 
-  const imgStyle1 = {
-    width: "1800px",
-    height: "auto",
-    marginLeft: "0",
-    marginRight: "0",
-    marginTop: "1500px"
+      // Check if the user exists and if their credentials are correct
+      const user = response.data.find(
+        (u) =>
+          u.email === loginData.email &&
+          u.password === loginData.password
+      );
+
+      if (user) {
+        // Determine the role of the user
+        if (user.role === "admin") {
+          window.location.href = "/add";
+        } else if (user.role === "user") {
+          window.location.href = "/user";
+        } else if (user.role === "stakeholder") {
+          window.location.href = "/stackholder";
+        }
+      } else {
+        alert("Invalid credentials. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred while logging in. Please try again later.");
+    }
   };
 
   return (
@@ -79,18 +84,6 @@ export default function Loging() {
               placeholder=""
               required
             />
-          </div>
-          <div className="form-group">
-            <label>Login As:</label>
-            <select
-              className="form-control"
-              name="loginAs"
-              value={loginData.loginAs}
-              onChange={handleInputChange}
-            >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
           </div>
           <div className="text-center">
             <div style={{ height: '10px' }}></div>

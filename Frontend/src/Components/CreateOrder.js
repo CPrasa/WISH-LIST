@@ -1,34 +1,53 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
 
 export default function CreateProduct() {
-  const [title, setTitle] = useState("");
+  const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [category, setCategory] = useState("animManga");
+  const [category, setCategory] = useState("ANIM & MANGA");
   const [data, setData] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/items').then((response) => {
+    axios.get('http://localhost:3000/toys').then((response) => {
       setData(response.data);
     })
   }, [])
 
-  const adddata = () => {
-    axios.post("http://localhost:8080/api/items",
-      {
-        "title": `${title}`,
-        "description": `${description}`,
-        "category": `${category}`,
-        "price": `${price}`
-      }).then((response) => {
-        console.log(response.data);
-        setData(prevData => [...prevData, response.data]);
-      })
+  const addData = () => {
+    axios.post("http://localhost:3000/toys/add", {
+      name,
+      description,
+      category,
+      price
+    }).then((response) => {
+      console.log(response.data);
+      setData(prevData => [...prevData, response.data]);
+      setName("");
+      setDescription("");
+      setPrice("");
+      setCategory("ANIM & MANGA");
+    }).catch((error) => {
+      console.error("Error adding product:", error);
+    });
   }
   
+  const handleDelete = () => {
+    if (window.confirm("Are you sure you want to delete the selected items?")) {
+      selectedRows.forEach(id => {
+        axios.delete(`http://localhost:3000/toys/delete/${id}`)
+          .then(() => {
+            console.log(`Item with id ${id} deleted.`);
+            setData(prevData => prevData.filter(item => item._id !== id));
+          })
+          .catch((error) => {
+            console.error(`Error deleting item with id ${id}:`, error);
+          });
+      });
+      setSelectedRows([]);
+    }
+  }
 
   const handleCheckboxChange = (id) => {
     setSelectedRows(prevSelected => {
@@ -40,34 +59,19 @@ export default function CreateProduct() {
     });
   }
 
-  const handleDelete = () => {
-    selectedRows.forEach(id => {
-      axios.delete(`http://localhost:8080/api/items/${id}`)
-        .then((response) => {
-          console.log(`Item with id ${id} deleted.`);
-          setData(prevData => prevData.filter(item => item.id !== id));
-        })
-        .catch((error) => {
-          console.error(`Error deleting item with id ${id}:`, error);
-        });
-    });
-    setSelectedRows([]);
-  }
-
   return (
     <div className="container">
       <div style={{ height: '20px' }}></div>
       <h2>CREATE PRODUCT</h2>
       <form>
         <div className="form-group">
-          <label htmlFor="itemTitle">Item Title</label>
+          <label htmlFor="itemName">Item Name</label>
           <input
             type="text"
             className="form-control"
-            id="itemTitle"
-            placeholder=""
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            id="itemName"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
         </div>
         <div className="form-group">
@@ -76,7 +80,6 @@ export default function CreateProduct() {
             type="text"
             className="form-control"
             id="description"
-            placeholder=""
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -100,13 +103,12 @@ export default function CreateProduct() {
             type="text"
             className="form-control"
             id="price"
-            placeholder="$"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
           />
         </div>
         <div style={{ height: '20px' }}></div>
-        <button type="submit" onClick={adddata} className="btn btn-outline-danger">
+        <button type="button" onClick={addData} className="btn btn-outline-danger">
           Add Product
         </button>
       </form>
@@ -122,7 +124,7 @@ export default function CreateProduct() {
           <thead>
             <tr>
               <th>Select</th>
-              <th>Title</th>
+              <th>Name</th>
               <th>Description</th>
               <th>Category</th>
               <th>Price</th>
@@ -130,15 +132,15 @@ export default function CreateProduct() {
           </thead>
           <tbody>
             {data.map(product => (
-              <tr key={product.id}>
+              <tr key={product._id}>
                 <td>
                   <input
                     type="checkbox"
-                    checked={selectedRows.includes(product.id)}
-                    onChange={() => handleCheckboxChange(product.id)}
+                    checked={selectedRows.includes(product._id)}
+                    onChange={() => handleCheckboxChange(product._id)}
                   />
                 </td>
-                <td>{product.title}</td>
+                <td>{product.name}</td>
                 <td>{product.description}</td>
                 <td>{product.category}</td>
                 <td>{product.price}</td>
