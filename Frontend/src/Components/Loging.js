@@ -52,13 +52,13 @@ export default function Loging() {
       border: '2px solid rgba(0, 0, 0, 0.1)',
       borderRadius: '10px',
       boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.2)',
-      width: '1000px',
-      height: '600px',
+      width: '500px',
+      height: '450px',
       marginTop: '50px'
     }}>
       <div>
         <h2 className="text-center">LOG IN</h2>
-        <form style={{ width: '500px' }} onSubmit={handleFormSubmit}>
+        <form style={{ width: '400px' }} onSubmit={handleFormSubmit}>
           <div className="form-group">
             <label htmlFor="itemTitle">Email Address</label>
             <input

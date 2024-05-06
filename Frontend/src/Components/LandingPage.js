@@ -8,7 +8,8 @@ function LandingPage(){
   const imgStyle1 = {
     width: "1800px",
     height: "auto",
-    margin: "0 25px" // 0 for top and bottom, 10px for left and right
+    margin: "0 25px"
+     // 0 for top and bottom, 10px for left and right
   };
   const imgStyle2 = {
     marginLeft: "650px"

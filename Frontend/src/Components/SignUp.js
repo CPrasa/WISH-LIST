@@ -33,7 +33,7 @@ export default function SignUp() {
       border: '2px solid rgba(0, 0, 0, 0.1)',
       borderRadius: '10px', // Added border radius
       boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.2)', // Increased shadow
-      width: '1000px',
+      width: '500px',
       height: '600px',
       marginTop: '50px'
     }}>
